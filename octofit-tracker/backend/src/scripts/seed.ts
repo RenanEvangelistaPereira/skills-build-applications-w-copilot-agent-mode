@@ -1,17 +1,139 @@
 import mongoose from 'mongoose';
-
-const connectionString = process.env.MONGODB_URI || 'mongodb://localhost:27017/octofit_db';
+import { connectDatabase } from '../config/database';
+import Activity from '../models/Activity';
+import LeaderboardEntry from '../models/LeaderboardEntry';
+import Team from '../models/Team';
+import User from '../models/User';
+import Workout from '../models/Workout';
 
 /**
  * Seed the octofit_db database with test data
  */
 async function seedDatabase() {
   try {
-    await mongoose.connect(connectionString);
+    await connectDatabase();
 
-    console.log('Connected to octofit_db');
+    await Promise.all([
+      User.deleteMany({}),
+      Team.deleteMany({}),
+      Activity.deleteMany({}),
+      LeaderboardEntry.deleteMany({}),
+      Workout.deleteMany({})
+    ]);
 
-    // TODO: Add seed data for users, teams, activities, leaderboard, and workouts
+    await User.insertMany([
+      {
+        username: 'alex-runner',
+        email: 'alex.runner@example.com',
+        displayName: 'Alex Rivera',
+        fitnessGoal: 'Train for a half marathon',
+        weeklyActivityMinutes: 285
+      },
+      {
+        username: 'maya-lifts',
+        email: 'maya.lifts@example.com',
+        displayName: 'Maya Chen',
+        fitnessGoal: 'Build functional strength',
+        weeklyActivityMinutes: 240
+      },
+      {
+        username: 'sam-yoga',
+        email: 'sam.yoga@example.com',
+        displayName: 'Sam Patel',
+        fitnessGoal: 'Improve mobility and recovery',
+        weeklyActivityMinutes: 180
+      }
+    ]);
+
+    await Team.insertMany([
+      {
+        name: 'Trail Blazers',
+        motto: 'Every mile counts',
+        memberCount: 8,
+        weeklyPoints: 8420
+      },
+      {
+        name: 'Core Crew',
+        motto: 'Strong together',
+        memberCount: 6,
+        weeklyPoints: 7650
+      },
+      {
+        name: 'Recovery Rebels',
+        motto: 'Rest is training',
+        memberCount: 5,
+        weeklyPoints: 6120
+      }
+    ]);
+
+    await Activity.insertMany([
+      {
+        userName: 'Alex Rivera',
+        activityType: 'Outdoor run',
+        durationMinutes: 52,
+        caloriesBurned: 610,
+        activityDate: new Date('2026-07-20T13:30:00Z')
+      },
+      {
+        userName: 'Maya Chen',
+        activityType: 'Strength circuit',
+        durationMinutes: 45,
+        caloriesBurned: 430,
+        activityDate: new Date('2026-07-21T22:00:00Z')
+      },
+      {
+        userName: 'Sam Patel',
+        activityType: 'Vinyasa yoga',
+        durationMinutes: 40,
+        caloriesBurned: 190,
+        activityDate: new Date('2026-07-22T12:15:00Z')
+      }
+    ]);
+
+    await LeaderboardEntry.insertMany([
+      {
+        rank: 1,
+        userName: 'Alex Rivera',
+        teamName: 'Trail Blazers',
+        points: 3280
+      },
+      {
+        rank: 2,
+        userName: 'Maya Chen',
+        teamName: 'Core Crew',
+        points: 3010
+      },
+      {
+        rank: 3,
+        userName: 'Sam Patel',
+        teamName: 'Recovery Rebels',
+        points: 2490
+      }
+    ]);
+
+    await Workout.insertMany([
+      {
+        title: 'Tempo Run Builder',
+        focusArea: 'Endurance',
+        difficulty: 'Intermediate',
+        durationMinutes: 38,
+        recommendedForGoal: 'Train for a half marathon'
+      },
+      {
+        title: 'Total Body Strength Ladder',
+        focusArea: 'Strength',
+        difficulty: 'Intermediate',
+        durationMinutes: 42,
+        recommendedForGoal: 'Build functional strength'
+      },
+      {
+        title: 'Mobility Reset Flow',
+        focusArea: 'Mobility',
+        difficulty: 'Beginner',
+        durationMinutes: 24,
+        recommendedForGoal: 'Improve mobility and recovery'
+      }
+    ]);
 
     console.log('Database seeding complete');
     await mongoose.disconnect();
