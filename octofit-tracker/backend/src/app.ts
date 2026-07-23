@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import activitiesRouter from './routes/activities';
 import leaderboardRouter from './routes/leaderboard';
@@ -9,6 +10,23 @@ export const PORT = 8000;
 
 export function createApp(baseUrl: string) {
   const app = express();
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
+
+        const isLocalFrontend = origin === 'http://localhost:5173';
+        const isCodespacesFrontend = /^https:\/\/[a-z0-9-]+-5173\.app\.github\.dev$/i.test(origin);
+
+        callback(null, isLocalFrontend || isCodespacesFrontend);
+      },
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+    })
+  );
 
   app.use(express.json());
 
