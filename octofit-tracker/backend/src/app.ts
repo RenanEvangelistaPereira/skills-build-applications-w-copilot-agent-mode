@@ -7,14 +7,7 @@ import workoutsRouter from './routes/workouts';
 
 export const PORT = 8000;
 
-export function getBaseUrl() {
-  const codespaceName = process.env.CODESPACE_NAME;
-  return codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev`
-    : 'http://localhost:8000';
-}
-
-export function createApp() {
+export function createApp(baseUrl: string) {
   const app = express();
 
   app.use(express.json());
@@ -30,7 +23,7 @@ export function createApp() {
       status: 'ok',
       service: 'octofit-backend',
       port: PORT,
-      baseUrl: getBaseUrl(),
+      baseUrl,
       database: 'mongodb://localhost:27017/octofit_db'
     });
   });

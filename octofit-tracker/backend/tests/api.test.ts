@@ -16,12 +16,10 @@ jest.mock('../src/models/Activity', () => ({
 describe('Octofit backend API', () => {
   afterEach(() => {
     jest.clearAllMocks();
-    delete process.env.CODESPACE_NAME;
   });
 
-  it('returns localhost baseUrl when CODESPACE_NAME is not set', async () => {
-    delete process.env.CODESPACE_NAME;
-    const app = createApp();
+  it('returns localhost baseUrl in /api/health', async () => {
+    const app = createApp('http://localhost:8000');
 
     const response = await request(app).get('/api/health');
 
@@ -30,9 +28,8 @@ describe('Octofit backend API', () => {
     expect(response.body.baseUrl).toBe('http://localhost:8000');
   });
 
-  it('returns Codespaces baseUrl when CODESPACE_NAME is set', async () => {
-    process.env.CODESPACE_NAME = 'demo-space';
-    const app = createApp();
+  it('returns Codespaces baseUrl in /api/health', async () => {
+    const app = createApp('https://demo-space-8000.app.github.dev');
 
     const response = await request(app).get('/api/health');
 
@@ -41,7 +38,7 @@ describe('Octofit backend API', () => {
   });
 
   it('returns users from /api/users', async () => {
-    const app = createApp();
+    const app = createApp('http://localhost:8000');
     const sortMock = jest.fn().mockResolvedValue([
       {
         username: 'alex-runner',
@@ -62,7 +59,7 @@ describe('Octofit backend API', () => {
   });
 
   it('returns activities from /api/activities', async () => {
-    const app = createApp();
+    const app = createApp('http://localhost:8000');
     const sortMock = jest.fn().mockResolvedValue([
       {
         userName: 'Maya Chen',

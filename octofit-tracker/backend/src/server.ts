@@ -1,10 +1,15 @@
 import { connectDatabase } from './config/database';
-import { createApp, getBaseUrl, PORT } from './app';
+import { createApp, PORT } from './app';
 
-const app = createApp();
+const codespaceName = process.env.CODESPACE_NAME;
+const baseUrl = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev`
+  : 'http://localhost:8000';
+
+const app = createApp(baseUrl);
 
 connectDatabase().then(() => {
   app.listen(PORT, () => {
-    console.log(`Octofit backend listening at ${getBaseUrl()}`);
+    console.log(`Octofit backend listening at ${baseUrl}`);
   });
 });
