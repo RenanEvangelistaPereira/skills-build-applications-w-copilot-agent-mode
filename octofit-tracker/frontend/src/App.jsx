@@ -7,7 +7,12 @@ import Workouts from './components/Workouts'
 import './App.css'
 
 function App() {
-  const codespaceName = import.meta.env.VITE_CODESPACE_NAME
+  const configuredCodespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  const browserHost = typeof window !== 'undefined' ? window.location.hostname : ''
+  const inferredCodespaceName = browserHost.endsWith('-5173.app.github.dev')
+    ? browserHost.replace(/-5173\.app\.github\.dev$/i, '')
+    : ''
+  const codespaceName = configuredCodespaceName || inferredCodespaceName
   const apiBaseUrl = codespaceName
     ? `https://${codespaceName}-8000.app.github.dev/api`
     : 'http://localhost:8000/api'
@@ -35,8 +40,8 @@ function App() {
       </section>
 
       <section className="alert alert-info" role="status">
-        Define <strong>VITE_CODESPACE_NAME</strong> in <strong>.env.local</strong> for
-        Codespaces API routing.
+        Codespaces API routing is auto-detected from the current URL. Optionally define{' '}
+        <strong>VITE_CODESPACE_NAME</strong> in <strong>.env.local</strong> to override.
       </section>
 
       <nav className="nav nav-pills nav-fill gap-2 mb-4">
